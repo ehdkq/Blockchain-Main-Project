@@ -1,16 +1,26 @@
 Project Proposal Guidelines 
 Format and Due
+
 •	Length:  2 pages (≈ 600–800 words) + one diagram.
+
 •	File name: docs/PROPOSAL.md in your group repo.
+
 •	Due: End of Week 5 
 Grading (10 pts)
+
 •	Clarity and Feasibility (3): Clear problem, scoped MVP, realistic plan.
+
 •	Research Alignment (2): Cites which prior work/theme you build on.
+
 •	Milestones (2): Specific week-by-week outcomes through Week 14.
+
 •	Architecture and Risks (2): Diagram + top risks with mitigations.
+
 •	Roles and Logistics (1): Who does what; meeting cadence; repo link.
 Required Sections (use these exact headings)
+
 1.	Title and One-Line Value Proposition
+
  “Blockchain-Backed IoT Data Verification System for Smart Farming”
 Value Proposition: an immutable and verifiable record for agricultural sensor data, ensuring transparency and trust in environmental monitoring using blockchain technology.
 
@@ -22,9 +32,11 @@ Current agricultural systems may lack a trustworthy yet simple mechanism for ens
 3.	Research Alignment (1–2 sentences)
  Name which theme you’re extending:
 a.	IoT + blockchain (signed telemetry, gateway verification, on-chain attestations)
+
 We will be extending IoT devices with the blockchain into farmers and their data they need, such as data logging.
 
 4.	Platform and Rationale (pick one)
+
 a.	Ethereum (Hardhat local, optional testnet) (public EVM, event-driven UI, wallets, ERC-standards).
  Briefly justify why your choice fits your problem (privacy, policy, ecosystem, tooling).
 
@@ -32,19 +44,26 @@ Etherum is well-suited for our project due to the smart contract capabilities wi
 
 5.	MVP Features (must-have) + Stretch
  List 2–4 MVP features you will demo by Week 10, and 1–2 Stretch targets if time allows.
+
 Simulated IoT Data Generation: A python or node.js script that generates fake sensor data (temperature, humidity, or pH) and it’ll simulate IoT devices
+
 On-Chain Data Hashing: A backend service hashes the sensor data using SHA-256 and stores the resulting hash along with metadata (such as timestamps) on the Ethereum blockchain.
+
 Basic Data Logging Smart Contract: A Solidity smart contract to receive and log data hashes from authorized sources
+
 Blockchain Interaction: A script using either web3.js or ethers.js to interact with the deployed smart contract on local or testnet blockchains.
 
 Stretch targets:
 Role-based access control: enhance the smart contract to include RBAC, which ensures only registered farmers can write data and manipulate it.
+
 Data Visualization Dashboard: A basic web app for data visualization, using either React or Flask.
+
 6.	Architecture Sketch (diagram)
  Show smart contracts/chaincode, backend/gateway, UI, data sources (and where identity/VCs sit). Label which events/transactions flow on-chain.
  
 7.	Security and Privacy Requirements
  One paragraph on how you’ll protect data and operations (e.g., VC-gated write APIs, endorsement policy, private data collections, input validation, rate limiting, DP noise in analytics).
+
 The primary goal is to ensure the data integrity. We can achieve this by hashing the sensor data before committing it to the blockchain, since it’s immutable. Doing this can create a tamper-proof audit trail. To protect operations, the system will implement access control within the smart contract. One of our stretch goals includes role based access where only authorized farmers and manipulate and change the data. All the data written to the chain will be hashes of the original data, not the raw data itself, which provides an additional layer of privacy.
 
 8.	Milestones (Weeks 6–14)
@@ -73,7 +92,9 @@ Github: https://github.com/ehdkq/Blockchain-Main-Project.git
  Example: “Data realism → use synthetic generator and public seed dataset; Policy complexity → start with allow-list; Chaincode bugs → unit tests + event assertions.”
 
 Risk 1: Smart Contract Vulnerabilities → Mitigation: A bug in the Solidity code could allow unauthorized data logging or fail under certain conditions. We will mitigate this by implementing a comprehensive test suite using Hardhat to cover all contract functions and by using static analysis tools to check for common security vulnerabilities.
+
 Risk 2: Unrealistic Data Simulation → Mitigation: The simulated sensor data may not accurately reflect real-world agricultural conditions, which could limit the demo's impact. We will research public agricultural data sets to inform our synthetic data generator, ensuring the values and patterns are as realistic as possible for the MVP.
+
 Risk 3: Blockchain Scalability and Cost → Mitigation: Logging every sensor reading individually to a public blockchain would be slow and expensive. For this project, we will use a local Hardhat testnet to eliminate cost and latency concerns. A potential stretch goal is to explore batching techniques, where a single Merkle root is committed on-chain to represent many readings, drastically reducing transaction volume.
  
 What you must have by end of Week 5
