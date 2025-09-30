@@ -60,8 +60,10 @@ Data Visualization Dashboard: A basic web app for data visualization, using eith
 
 6.	Architecture Sketch (diagram)
  Show smart contracts/chaincode, backend/gateway, UI, data sources (and where identity/VCs sit). Label which events/transactions flow on-chain.
+<img width="975" height="548" alt="image" src="https://github.com/user-attachments/assets/55c78ea3-774f-4f2e-adbf-c94d17ed88cc" />
+
  
-7.	Security and Privacy Requirements
+8.	Security and Privacy Requirements
  One paragraph on how you’ll protect data and operations (e.g., VC-gated write APIs, endorsement policy, private data collections, input validation, rate limiting, DP noise in analytics).
 
 The primary goal is to ensure the data integrity. We can achieve this by hashing the sensor data before committing it to the blockchain, since it’s immutable. Doing this can create a tamper-proof audit trail. To protect operations, the system will implement access control within the smart contract. One of our stretch goals includes role based access where only authorized farmers and manipulate and change the data. All the data written to the chain will be hashes of the original data, not the raw data itself, which provides an additional layer of privacy.
