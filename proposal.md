@@ -191,6 +191,8 @@ Stretch (1–2 if time):
 ## 6. Architecture Sketch
 *(Insert diagram here)*  
 Label contracts/chaincode, backend/gateway, UI, data flow, identity/VCs.
+<img width="975" height="548" alt="image" src="https://github.com/user-attachments/assets/bc6f9c1c-d578-46f5-beb4-fa745ea69040" />
+
 
 ## 7. Security & Privacy Requirements
 One paragraph: how we’ll protect data & operations.
