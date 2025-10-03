@@ -9,7 +9,8 @@ Weekly progress report
 - Set up project repo and updated README with local run instructions.
 - Created skeleton structure (contracts/scripts/tests).
 - Configured CI workflow (.github/workflows/ci.yml).
-- Populated project board with ≥6 user stories (MVP + stretch).
+- Populated project board with ≥6 user stories.
+- Successfully connected devices to the Tailscale virtual machine
 
 ## Evidence
 - <img width="704" height="605" alt="greencheck" src="https://github.com/user-attachments/assets/03453731-5342-40f6-9349-3ecf24b6614e" />
