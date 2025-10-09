@@ -34,7 +34,6 @@ jobs:
       - name: Run test suite
         run: npx hardhat test
 
-      # (Optional) Step 6: Show gas usage report (if you use hardhat-gas-reporter)
       - name: Gas report (optional)
         if: always()
         run: |
