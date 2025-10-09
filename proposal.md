@@ -1,24 +1,3 @@
-Project Proposal Guidelines 
-Format and Due
-
-•	Length:  2 pages (≈ 600–800 words) + one diagram.
-
-•	File name: docs/PROPOSAL.md in your group repo.
-
-•	Due: End of Week 5 
-Grading (10 pts)
-
-•	Clarity and Feasibility (3): Clear problem, scoped MVP, realistic plan.
-
-•	Research Alignment (2): Cites which prior work/theme you build on.
-
-•	Milestones (2): Specific week-by-week outcomes through Week 14.
-
-•	Architecture and Risks (2): Diagram + top risks with mitigations.
-
-•	Roles and Logistics (1): Who does what; meeting cadence; repo link.
-Required Sections (use these exact headings)
-
 1.	Title and One-Line Value Proposition
 
  “Blockchain-Backed IoT Data Verification System for Smart Farming”
