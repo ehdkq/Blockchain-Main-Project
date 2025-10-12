@@ -2,10 +2,10 @@
 
 ## Team Info
 
-- **Team Number:** 02
-- **RPC Endpoint:** https://hh-02.didlab.org
-- **Chain ID (Decimal):** 31338
-- **Token Address:** `0x677df0cb865368207999F2862Ece576dC56D8dF6` 
+- **Team Number:** 00
+- **RPC Endpoint:** https://eth.didlab.org
+- **Chain ID (Decimal):** 252501
+- **Token Address:** `0x71550ac84ba7599220eaef5c756b847cb4486606` 
 
 # How to Run Locally (Dev Server or Static)
 
