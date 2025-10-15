@@ -42,7 +42,7 @@ TOKEN_ADDRESS=${rcpt.contractAddress}
 
 <br>
 
-![block explorer]https://github.com/ehdkq/Blockchain-Main-Project/blob/main/Project%20Screenshots/contractcreation.png
+![block explorer](https://github.com/ehdkq/Blockchain-Main-Project/blob/main/Project%20Screenshots/contractcreation.png)
 # Project Short Write-up
 
 ## a. Where you enforced: cap, pause, roles
