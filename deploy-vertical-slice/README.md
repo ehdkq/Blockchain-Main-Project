@@ -30,6 +30,7 @@ Block: 249597n
 
 Add this to .env:
 TOKEN_ADDRESS=${rcpt.contractAddress}
+```
 ## Screenshots
 <br> 
 
