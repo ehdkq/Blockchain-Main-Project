@@ -30,8 +30,18 @@ Block: 249597n
 
 Add this to .env:
 TOKEN_ADDRESS=${rcpt.contractAddress}
-## MetaMask Screenshots
+## Screenshots
+<br> 
 
+![deploy](https://github.com/ehdkq/Blockchain-Main-Project/blob/main/Project%20Screenshots/deploy252501.png)
+
+<br>
+
+![dapp](https://github.com/ehdkq/Blockchain-Main-Project/blob/main/Project%20Screenshots/dapp-success.png)
+
+<br>
+
+![block explorer]https://github.com/ehdkq/Blockchain-Main-Project/blob/main/Project%20Screenshots/contractcreation.png
 # Project Short Write-up
 
 ## a. Where you enforced: cap, pause, roles
@@ -49,6 +59,7 @@ TOKEN_ADDRESS=${rcpt.contractAddress}
   - `MINTER_ROLE` required by `mint()` and `airdrop()`,
   - `PAUSER_ROLE` required by `pause()`/`unpause()`.  
   The `onlyRole` modifier ensures that only authorized accounts can call these functions.
+```
 
 <br>
 
