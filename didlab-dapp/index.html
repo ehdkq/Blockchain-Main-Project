@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>DIDLab — ERC-20 DApp</title>
+  <title>DIDLab — AgriSensor DApp</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     html, body {
@@ -13,7 +13,7 @@
       color: #e6eaf2;
     }
     .wrap {
-      max-width: 880px;
+      max-width: 1200px;
       margin: 40px auto;
       padding: 24px;
       border: 1px solid #24314a;
@@ -24,6 +24,10 @@
       margin: 0 0 16px;
       font-size: 22px;
     }
+    h3 {
+      margin: 16px 0 8px;
+      font-size: 16px;
+    }
     .row {
       display: flex;
       gap: 12px;
@@ -32,13 +36,19 @@
     }
     .row > * {
       flex: 1;
+      min-width: 200px;
     }
-    input, select, button {
+    input, select, button, textarea {
       padding: 10px 12px;
       border: 1px solid #314164;
       background: #0b1527;
       color: #e6eaf2;
       border-radius: 10px;
+      font-family: inherit;
+    }
+    textarea {
+      min-height: 60px;
+      resize: vertical;
     }
     button {
       cursor: pointer;
@@ -47,14 +57,19 @@
       background: #335cff;
       border-color: #335cff;
     }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
     .mono {
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
     .card {
-      padding: 12px;
+      padding: 16px;
       border: 1px solid #24314a;
       border-radius: 10px;
       background: #0b1527;
+      margin: 12px 0;
     }
     .muted {
       opacity: .8;
@@ -80,178 +95,551 @@
       padding: 6px 8px;
       border-bottom: 1px dashed #22314e;
     }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin: 16px 0;
+      border-bottom: 2px solid #24314a;
+    }
+    .tab {
+      padding: 10px 16px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: #8a9bb8;
+      border-radius: 10px 10px 0 0;
+    }
+    .tab.active {
+      background: #0b1527;
+      color: #e6eaf2;
+      border-bottom: 2px solid #335cff;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #24314a;
+    }
+    th {
+      background: #0b1527;
+      font-weight: 600;
+    }
+    .small {
+      font-size: 13px;
+    }
+    label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+      opacity: 0.8;
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>￿ DIDLab — ERC-20 DApp</h1>
+    <h1>🌾 DIDLab — AgriSensor DApp</h1>
     
     <!-- CONFIG -->
     <div class="card">
       <div class="row">
         <div>
-          <label>Team</label>
+          <label>Network</label>
           <select id="team">
-            <option>00</option>
-            <option>01</option>
-            <option>02</option>
-            <option>03</option>
-            <option>04</option>
-            <option>05</option>
-            <option>06</option>
-            <option>07</option>
-            <option>08</option>
-            <option>09</option>
-            <option>10</option>
-            <option>11</option>
-            <option>12</option>
+            <option value="00">DIDLab Main (252501)</option>
+            <!-- Add more networks here as needed -->
           </select>
         </div>
         <div>
-          <label>Token Address</label>
-          <input id="tokenAddr" class="mono" placeholder="0x..." />
+          <label>Sensor Contract Address</label>
+          <input id="contractAddr" class="mono" placeholder="0x..." />
         </div>
       </div>
       <div class="row">
         <button id="btnConnect" class="primary">1) Connect & Switch Network</button>
-        <button id="btnLoad">2) Load Token</button>
-        <button id="btnWatch">Add Token to MetaMask</button>
-        <button id="btnRefresh">Refresh Balance</button>
+        <button id="btnLoad">2) Load Contract</button>
+        <button id="btnRefresh">Refresh Stats</button>
       </div>
     </div>
     
     <!-- STATUS -->
-    <div class="row">
-      <div class="card">
-        <div class="kvs">
-          <div class="muted">Account</div>
-          <div id="acct" class="mono">—</div>
-          <div class="muted">Network</div>
-          <div id="net" class="mono">—</div>
-          <div class="muted">Token</div>
-          <div id="meta" class="mono">—</div>
-          <div class="muted">Balance</div>
-          <div id="bal" class="mono">—</div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- TRANSFER -->
     <div class="card">
-      <h3>Transfer</h3>
-      <div class="row">
-        <input id="to" class="mono" placeholder="Recipient 0x..." />
-        <input id="amt" class="mono" placeholder="Amount (human units)" />
-        <button id="btnSend" class="primary">Send</button>
+      <div class="kvs">
+        <div class="muted">Account</div>
+        <div id="acct" class="mono">—</div>
+        <div class="muted">Network</div>
+        <div id="net" class="mono">—</div>
+        <div class="muted">Contract</div>
+        <div id="contractInfo" class="mono">—</div>
+        <div class="muted">Total Readings</div>
+        <div id="totalReadings" class="mono">—</div>
+        <div class="muted">Total Crop Events</div>
+        <div id="totalEvents" class="mono">—</div>
+        <div class="muted">Total Supply Chain Stages</div>
+        <div id="totalStages" class="mono">—</div>
       </div>
-      <div id="txlog" class="mono muted"></div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" data-tab="submit">Submit Sensor Data</button>
+      <button class="tab" data-tab="view">View Readings</button>
+      <button class="tab" data-tab="crop">Crop Events</button>
+      <button class="tab" data-tab="supply">Supply Chain</button>
+      <button class="tab" data-tab="roles">Manage Roles</button>
+    </div>
+
+    <!-- TAB: SUBMIT SENSOR DATA -->
+    <div id="tab-submit" class="tab-content active">
+      <div class="card">
+        <h3>Submit Single Reading</h3>
+        <div class="row">
+          <div>
+            <label>Farm ID</label>
+            <input id="farmId" type="number" placeholder="e.g. 1" value="1" />
+          </div>
+          <div>
+            <label>Temperature (°C)</label>
+            <input id="temp" type="number" step="0.1" placeholder="e.g. 25.5" />
+          </div>
+          <div>
+            <label>Soil Moisture (%)</label>
+            <input id="moisture" type="number" step="0.1" placeholder="e.g. 45.2" />
+          </div>
+          <div>
+            <label>Humidity (%)</label>
+            <input id="humidity" type="number" step="0.1" placeholder="e.g. 60.5" />
+          </div>
+        </div>
+        <button id="btnSubmit" class="primary">Submit Reading</button>
+      </div>
+
+      <div class="card">
+        <h3>Submit Batch (for IoT Gateways)</h3>
+        <p class="muted small">Enter comma-separated values. All arrays must have the same length.</p>
+        <div class="row">
+          <div>
+            <label>Farm IDs (comma-separated)</label>
+            <input id="batchFarms" placeholder="1,1,2,2" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Temperatures (°C)</label>
+            <input id="batchTemps" placeholder="25.5,26.0,24.8,25.2" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Soil Moisture (%)</label>
+            <input id="batchMoisture" placeholder="45.2,46.0,44.5,45.8" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Humidity (%)</label>
+            <input id="batchHumidity" placeholder="60.5,61.2,59.8,60.9" />
+          </div>
+        </div>
+        <button id="btnBatch" class="primary">Submit Batch</button>
+      </div>
+    </div>
+
+    <!-- TAB: VIEW READINGS -->
+    <div id="tab-view" class="tab-content">
+      <div class="card">
+        <h3>Query Readings</h3>
+        <div class="row">
+          <div>
+            <label>Farm ID</label>
+            <input id="queryFarm" type="number" placeholder="1" value="1" />
+          </div>
+          <button id="btnQuery">Get Readings for Farm</button>
+        </div>
+        <div id="readingsTable"></div>
+      </div>
+    </div>
+
+    <!-- TAB: CROP EVENTS -->
+    <div id="tab-crop" class="tab-content">
+      <div class="card">
+        <h3>Record Crop Event</h3>
+        <div class="row">
+          <div>
+            <label>Farm ID</label>
+            <input id="cropFarmId" type="number" placeholder="1" value="1" />
+          </div>
+          <div>
+            <label>Event Type</label>
+            <select id="cropEventType">
+              <option>SEED</option>
+              <option>FERTILIZE</option>
+              <option>IRRIGATE</option>
+              <option>HARVEST</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Notes</label>
+            <textarea id="cropNotes" placeholder="Additional details..."></textarea>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Linked Data Hash (optional)</label>
+            <input id="cropHash" class="mono" placeholder="0x0000..." value="0x0000000000000000000000000000000000000000000000000000000000000000" />
+          </div>
+        </div>
+        <button id="btnCropEvent" class="primary">Record Event</button>
+      </div>
+
+      <div class="card">
+        <h3>View Crop Events</h3>
+        <div class="row">
+          <div>
+            <label>Farm ID</label>
+            <input id="queryCropFarm" type="number" placeholder="1" value="1" />
+          </div>
+          <button id="btnQueryCrop">Get Events for Farm</button>
+        </div>
+        <div id="cropEventsTable"></div>
+      </div>
+    </div>
+
+    <!-- TAB: SUPPLY CHAIN -->
+    <div id="tab-supply" class="tab-content">
+      <div class="card">
+        <h3>Record Supply Chain Stage</h3>
+        <div class="row">
+          <div>
+            <label>Product ID</label>
+            <input id="productId" type="number" placeholder="1001" />
+          </div>
+          <div>
+            <label>Stage</label>
+            <select id="stage">
+              <option>FARM</option>
+              <option>TRANSPORT</option>
+              <option>STORAGE</option>
+              <option>RETAIL</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Location</label>
+            <input id="location" placeholder="Kansas City Warehouse" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Linked Data Hash (optional)</label>
+            <input id="stageHash" class="mono" placeholder="0x0000..." value="0x0000000000000000000000000000000000000000000000000000000000000000" />
+          </div>
+        </div>
+        <button id="btnStage" class="primary">Record Stage</button>
+      </div>
+
+      <div class="card">
+        <h3>View Supply Chain</h3>
+        <div class="row">
+          <div>
+            <label>Product ID</label>
+            <input id="queryProduct" type="number" placeholder="1001" />
+          </div>
+          <button id="btnQuerySupply">Get Stages for Product</button>
+        </div>
+        <div id="supplyTable"></div>
+      </div>
+    </div>
+
+    <!-- TAB: MANAGE ROLES -->
+    <div id="tab-roles" class="tab-content">
+      <div class="card">
+        <h3>Grant Role</h3>
+        <p class="muted small">Only admin can grant roles.</p>
+        <div class="row">
+          <div>
+            <label>Role</label>
+            <select id="grantRole">
+              <option value="DEVICE_ROLE">DEVICE_ROLE</option>
+              <option value="FARMER_ROLE">FARMER_ROLE</option>
+              <option value="RESEARCHER_ROLE">RESEARCHER_ROLE</option>
+              <option value="SUPPLY_CHAIN_ROLE">SUPPLY_CHAIN_ROLE</option>
+            </select>
+          </div>
+          <div>
+            <label>Address</label>
+            <input id="grantAddr" class="mono" placeholder="0x..." />
+          </div>
+        </div>
+        <button id="btnGrant" class="primary">Grant Role</button>
+      </div>
+
+      <div class="card">
+        <h3>Revoke Role</h3>
+        <div class="row">
+          <div>
+            <label>Role</label>
+            <select id="revokeRole">
+              <option value="DEVICE_ROLE">DEVICE_ROLE</option>
+              <option value="FARMER_ROLE">FARMER_ROLE</option>
+              <option value="RESEARCHER_ROLE">RESEARCHER_ROLE</option>
+              <option value="SUPPLY_CHAIN_ROLE">SUPPLY_CHAIN_ROLE</option>
+            </select>
+          </div>
+          <div>
+            <label>Address</label>
+            <input id="revokeAddr" class="mono" placeholder="0x..." />
+          </div>
+        </div>
+        <button id="btnRevoke" class="primary">Revoke Role</button>
+      </div>
+    </div>
+
+    <!-- LOG -->
+    <div class="card">
+      <h3>Transaction Log</h3>
+      <div id="txlog" class="mono small"></div>
     </div>
     
-    <p class="muted">Tip: values persist in localStorage.</p>
+    <p class="muted small">Tip: values persist in localStorage.</p>
   </div>
 
   <script type="module">
-    // ===== Imports (no build step)
     import {
       createPublicClient,
       createWalletClient,
       custom,
       getAddress,
-      formatUnits,
-      parseUnits
+      keccak256,
+      toHex
     } from "https://esm.sh/viem@2.37.5";
 
-    // ===== Minimal ERC-20 ABI
-    const ERC20_ABI = [
+    // ===== AgriSensorData ABI (essential functions)
+    const SENSOR_ABI = [
       {
         type: "function",
-        name: "name",
-        stateMutability: "view",
-        inputs: [],
-        outputs: [{ type: "string" }]
+        name: "submitSensorData",
+        stateMutability: "nonpayable",
+        inputs: [
+          { name: "farmId", type: "uint256" },
+          { name: "temperature", type: "int16" },
+          { name: "soilMoisture", type: "uint16" },
+          { name: "humidity", type: "uint16" }
+        ],
+        outputs: []
       },
       {
         type: "function",
-        name: "symbol",
-        stateMutability: "view",
-        inputs: [],
-        outputs: [{ type: "string" }]
+        name: "submitBatch",
+        stateMutability: "nonpayable",
+        inputs: [
+          { name: "farmIds", type: "uint256[]" },
+          { name: "temperatures", type: "int16[]" },
+          { name: "moistures", type: "uint16[]" },
+          { name: "humidities", type: "uint16[]" }
+        ],
+        outputs: []
       },
       {
         type: "function",
-        name: "decimals",
-        stateMutability: "view",
-        inputs: [],
-        outputs: [{ type: "uint8" }]
+        name: "recordCropEvent",
+        stateMutability: "nonpayable",
+        inputs: [
+          { name: "farmId", type: "uint256" },
+          { name: "eventType", type: "string" },
+          { name: "notes", type: "string" },
+          { name: "linkedDataHash", type: "bytes32" }
+        ],
+        outputs: []
       },
       {
         type: "function",
-        name: "balanceOf",
+        name: "recordSupplyChainStage",
+        stateMutability: "nonpayable",
+        inputs: [
+          { name: "productId", type: "uint256" },
+          { name: "stage", type: "string" },
+          { name: "location", type: "string" },
+          { name: "linkedDataHash", type: "bytes32" }
+        ],
+        outputs: []
+      },
+      {
+        type: "function",
+        name: "getReadingsByFarm",
         stateMutability: "view",
-        inputs: [{ name: "account", type: "address" }],
+        inputs: [{ name: "farmId", type: "uint256" }],
+        outputs: [{ type: "uint256[]" }]
+      },
+      {
+        type: "function",
+        name: "getCropEventsByFarm",
+        stateMutability: "view",
+        inputs: [{ name: "farmId", type: "uint256" }],
+        outputs: [{ type: "uint256[]" }]
+      },
+      {
+        type: "function",
+        name: "getSupplyChainStages",
+        stateMutability: "view",
+        inputs: [{ name: "productId", type: "uint256" }],
+        outputs: [{ type: "uint256[]" }]
+      },
+      {
+        type: "function",
+        name: "readings",
+        stateMutability: "view",
+        inputs: [{ name: "", type: "uint256" }],
+        outputs: [
+          { name: "timestamp", type: "uint256" },
+          { name: "deviceId", type: "address" },
+          { name: "farmId", type: "uint256" },
+          { name: "temperature", type: "int16" },
+          { name: "soilMoisture", type: "uint16" },
+          { name: "humidity", type: "uint16" },
+          { name: "dataHash", type: "bytes32" }
+        ]
+      },
+      {
+        type: "function",
+        name: "cropEvents",
+        stateMutability: "view",
+        inputs: [{ name: "", type: "uint256" }],
+        outputs: [
+          { name: "farmId", type: "uint256" },
+          { name: "eventType", type: "string" },
+          { name: "timestamp", type: "uint256" },
+          { name: "notes", type: "string" },
+          { name: "linkedDataHash", type: "bytes32" }
+        ]
+      },
+      {
+        type: "function",
+        name: "supplyChainStages",
+        stateMutability: "view",
+        inputs: [{ name: "", type: "uint256" }],
+        outputs: [
+          { name: "productId", type: "uint256" },
+          { name: "stage", type: "string" },
+          { name: "timestamp", type: "uint256" },
+          { name: "recorder", type: "address" },
+          { name: "location", type: "string" },
+          { name: "linkedDataHash", type: "bytes32" }
+        ]
+      },
+      {
+        type: "function",
+        name: "getTotalReadings",
+        stateMutability: "view",
+        inputs: [],
         outputs: [{ type: "uint256" }]
       },
       {
         type: "function",
-        name: "transfer",
+        name: "getTotalCropEvents",
+        stateMutability: "view",
+        inputs: [],
+        outputs: [{ type: "uint256" }]
+      },
+      {
+        type: "function",
+        name: "getTotalSupplyChainStages",
+        stateMutability: "view",
+        inputs: [],
+        outputs: [{ type: "uint256" }]
+      },
+      {
+        type: "function",
+        name: "grantRole",
         stateMutability: "nonpayable",
         inputs: [
-          { name: "to", type: "address" },
-          { name: "amount", type: "uint256" }
+          { name: "role", type: "bytes32" },
+          { name: "account", type: "address" }
         ],
-        outputs: [{ type: "bool" }]
+        outputs: []
+      },
+      {
+        type: "function",
+        name: "revokeRole",
+        stateMutability: "nonpayable",
+        inputs: [
+          { name: "role", type: "bytes32" },
+          { name: "account", type: "address" }
+        ],
+        outputs: []
       },
       {
         type: "event",
-        name: "Transfer",
+        name: "SensorDataSubmitted",
         inputs: [
-          { indexed: true, name: "from", type: "address" },
-          { indexed: true, name: "to", type: "address" },
-          { indexed: false, name: "value", type: "uint256" }
+          { indexed: true, name: "readingId", type: "uint256" },
+          { indexed: true, name: "deviceId", type: "address" },
+          { indexed: true, name: "farmId", type: "uint256" },
+          { indexed: false, name: "timestamp", type: "uint256" }
+        ]
+      },
+      {
+        type: "event",
+        name: "CropEventRecorded",
+        inputs: [
+          { indexed: true, name: "eventId", type: "uint256" },
+          { indexed: true, name: "farmId", type: "uint256" },
+          { indexed: false, name: "eventType", type: "string" },
+          { indexed: false, name: "timestamp", type: "uint256" }
         ]
       }
     ];
 
-    // ===== Team → RPC/Chain config
+    // Role hashes
+    const ROLES = {
+      DEVICE_ROLE: keccak256(toHex("DEVICE_ROLE")),
+      FARMER_ROLE: keccak256(toHex("FARMER_ROLE")),
+      RESEARCHER_ROLE: keccak256(toHex("RESEARCHER_ROLE")),
+      SUPPLY_CHAIN_ROLE: keccak256(toHex("SUPPLY_CHAIN_ROLE"))
+    };
+
+    // ===== Network config
     const TEAM_CHAINS = {
-      "00": { id: 252501, name: "DIDLab Main", rpc: "https://eth.didlab.org" },
-      "01": { id: 31337, name: "DIDLab Team 01", rpc: "https://hh-01.didlab.org" },
-      "02": { id: 31338, name: "DIDLab Team 02", rpc: "https://hh-02.didlab.org" },
-      "03": { id: 31339, name: "DIDLab Team 03", rpc: "https://hh-03.didlab.org" },
-      "04": { id: 31340, name: "DIDLab Team 04", rpc: "https://hh-04.didlab.org" },
-      "05": { id: 31341, name: "DIDLab Team 05", rpc: "https://hh-05.didlab.org" },
-      "06": { id: 31342, name: "DIDLab Team 06", rpc: "https://hh-06.didlab.org" },
-      "07": { id: 31343, name: "DIDLab Team 07", rpc: "https://hh-07.didlab.org" },
-      "08": { id: 31344, name: "DIDLab Team 08", rpc: "https://hh-08.didlab.org" },
-      "09": { id: 31345, name: "DIDLab Team 09", rpc: "https://hh-09.didlab.org" },
-      "10": { id: 31346, name: "DIDLab Team 10", rpc: "https://hh-10.didlab.org" },
-      "11": { id: 31347, name: "DIDLab Team 11", rpc: "https://hh-11.didlab.org" },
-      "12": { id: 31348, name: "DIDLab Team 12", rpc: "https://hh-12.didlab.org" }
+      "00": { id: 252501, name: "DIDLab Main", rpc: "https://eth.didlab.org" }
     };
 
     // ===== UI elements
     const el = (id) => document.getElementById(id);
     const teamSel = el("team");
-    const tokenInput = el("tokenAddr");
+    const contractInput = el("contractAddr");
     const acctEl = el("acct");
     const netEl = el("net");
-    const metaEl = el("meta");
-    const balEl = el("bal");
+    const contractInfoEl = el("contractInfo");
+    const totalReadingsEl = el("totalReadings");
+    const totalEventsEl = el("totalEvents");
+    const totalStagesEl = el("totalStages");
     const txlog = el("txlog");
 
     // ===== State
-    let chain, token, decimals = 18, symbol = "TOKEN", name = "Token";
+    let chain, contract;
     let walletClient, publicClient, account;
 
-    // ===== Load/save simple prefs
-    const saved = JSON.parse(localStorage.getItem("didlab-ui") || "{}");
+    // ===== Load/save prefs
+    const saved = JSON.parse(localStorage.getItem("didlab-sensor-ui") || "{}");
     if (saved.team) teamSel.value = saved.team;
-    if (saved.token) tokenInput.value = saved.token;
+    if (saved.contract) contractInput.value = saved.contract;
 
     function save() {
-      localStorage.setItem("didlab-ui", JSON.stringify({
+      localStorage.setItem("didlab-sensor-ui", JSON.stringify({
         team: teamSel.value,
-        token: tokenInput.value
+        contract: contractInput.value
       }));
     }
 
@@ -289,7 +677,6 @@
           params: [{ chainId: params[0].chainId }]
         });
       } catch (e) {
-        // Not added? add it.
         await window.ethereum.request({
           method: "wallet_addEthereumChain",
           params
@@ -301,7 +688,6 @@
       await ensureMetamask();
       chain = currentChain();
       
-      // bridge viem through MetaMask (no CORS issues)
       walletClient = createWalletClient({
         chain,
         transport: custom(window.ethereum)
@@ -320,44 +706,35 @@
       logOk("Connected. Network ready.");
     }
 
-    async function loadToken() {
-      token = getAddress(tokenInput.value.trim());
+    async function loadContract() {
+      contract = getAddress(contractInput.value.trim());
       save();
       
-      name = await publicClient.readContract({
-        address: token,
-        abi: ERC20_ABI,
-        functionName: "name"
-      });
+      contractInfoEl.textContent = contract;
+      logOk(`Loaded contract ${contract}`);
       
-      symbol = await publicClient.readContract({
-        address: token,
-        abi: ERC20_ABI,
-        functionName: "symbol"
-      });
-      
-      decimals = await publicClient.readContract({
-        address: token,
-        abi: ERC20_ABI,
-        functionName: "decimals"
-      });
-      
-      metaEl.textContent = `${name} (${symbol}), ${decimals}d, ${token}`;
-      logOk(`Loaded token ${symbol}`);
-      
-      // Watch transfers involving this account and refresh balance
+      // Watch events
       publicClient.watchContractEvent({
-        address: token,
-        abi: ERC20_ABI,
-        eventName: "Transfer",
+        address: contract,
+        abi: SENSOR_ABI,
+        eventName: "SensorDataSubmitted",
         onLogs: (logs) => {
           for (const l of logs) {
-            if (l.args.from?.toLowerCase() === account.toLowerCase() ||
-                l.args.to?.toLowerCase() === account.toLowerCase()) {
-              refresh();
-              break;
-            }
+            logOk(`📊 New reading #${l.args.readingId} from device ${l.args.deviceId?.slice(0,8)}...`);
           }
+          refresh();
+        }
+      });
+
+      publicClient.watchContractEvent({
+        address: contract,
+        abi: SENSOR_ABI,
+        eventName: "CropEventRecorded",
+        onLogs: (logs) => {
+          for (const l of logs) {
+            logOk(`🌱 Crop event #${l.args.eventId}: ${l.args.eventType}`);
+          }
+          refresh();
         }
       });
       
@@ -365,56 +742,273 @@
     }
 
     async function refresh() {
-      if (!token || !account) return;
+      if (!contract) return;
       
-      const bal = await publicClient.readContract({
-        address: token,
-        abi: ERC20_ABI,
-        functionName: "balanceOf",
-        args: [account]
+      const totalReadings = await publicClient.readContract({
+        address: contract,
+        abi: SENSOR_ABI,
+        functionName: "getTotalReadings"
       });
       
-      balEl.textContent = `${formatUnits(bal, Number(decimals))} ${symbol}`;
+      const totalEvents = await publicClient.readContract({
+        address: contract,
+        abi: SENSOR_ABI,
+        functionName: "getTotalCropEvents"
+      });
+
+      const totalStages = await publicClient.readContract({
+        address: contract,
+        abi: SENSOR_ABI,
+        functionName: "getTotalSupplyChainStages"
+      });
+      
+      totalReadingsEl.textContent = totalReadings.toString();
+      totalEventsEl.textContent = totalEvents.toString();
+      totalStagesEl.textContent = totalStages.toString();
     }
 
-    async function send() {
-  const to = getAddress(el("to").value.trim());
-  const amtStr = el("amt").value.trim();
-  if (!amtStr) throw new Error("Enter amount");
-  
-  const amount = parseUnits(amtStr, Number(decimals));
-  
-  const hash = await walletClient.writeContract({
-    address: token,
-    abi: ERC20_ABI,
-    functionName: "transfer",
-    args: [to, amount],
-    account,
-    gas: 100000n,
-    gasPrice: 10000000000n  // 10 gwei - adjust based on what worked for you
-  });
-  
-  logWarn(`Submitted: ${hash}`);
-  const rcpt = await publicClient.waitForTransactionReceipt({ hash });
-  logOk(`Mined in block ${rcpt.blockNumber} (gas ${rcpt.gasUsed})`);
-}
-
-    async function watchAsset() {
-      if (!token || !symbol) return;
+    // ===== Submit sensor data
+    async function submitReading() {
+      const farmId = BigInt(el("farmId").value);
+      const temp = parseFloat(el("temp").value);
+      const moisture = parseFloat(el("moisture").value);
+      const humidity = parseFloat(el("humidity").value);
       
-      await window.ethereum.request({
-        method: "wallet_watchAsset",
-        params: {
-          type: "ERC20",
-          options: {
-            address: token,
-            symbol,
-            decimals: Number(decimals)
-          }
-        }
+      // Validate ranges
+      if (moisture < 0 || moisture > 100) throw new Error("Soil moisture must be 0-100%");
+      if (humidity < 0 || humidity > 100) throw new Error("Humidity must be 0-100%");
+      
+      // Convert to fixed-point (0.1 precision) and ensure proper integer types
+      const tempInt = Math.round(temp * 10);
+      const moistureInt = Math.round(moisture * 10);
+      const humidityInt = Math.round(humidity * 10);
+      
+      console.log("Submitting:", { farmId, tempInt, moistureInt, humidityInt });
+      
+      const hash = await walletClient.writeContract({
+        address: contract,
+        abi: SENSOR_ABI,
+        functionName: "submitSensorData",
+        args: [farmId, tempInt, moistureInt, humidityInt],
+        account,
+        gas: 300000n,
+        gasPrice: 20000000000n
       });
       
-      logOk("Token added to MetaMask (or already present).");
+      logWarn(`Submitted: ${hash}`);
+      const rcpt = await publicClient.waitForTransactionReceipt({ hash });
+      logOk(`✓ Reading recorded in block ${rcpt.blockNumber}`);
+    }
+
+    async function submitBatch() {
+      const farms = el("batchFarms").value.split(",").map(s => BigInt(s.trim()));
+      const temps = el("batchTemps").value.split(",").map(s => Math.round(parseFloat(s.trim()) * 10));
+      const moistures = el("batchMoisture").value.split(",").map(s => Math.round(parseFloat(s.trim()) * 10));
+      const humidities = el("batchHumidity").value.split(",").map(s => Math.round(parseFloat(s.trim()) * 10));
+      
+      if (farms.length !== temps.length || farms.length !== moistures.length || farms.length !== humidities.length) {
+        throw new Error("Array lengths must match");
+      }
+      
+      const hash = await walletClient.writeContract({
+        address: contract,
+        abi: SENSOR_ABI,
+        functionName: "submitBatch",
+        args: [farms, temps, moistures, humidities],
+        account,
+        gas: 500000n,
+        gasPrice: 20000000000n
+      });
+      
+      logWarn(`Batch submitted: ${hash}`);
+      const rcpt = await publicClient.waitForTransactionReceipt({ hash });
+      logOk(`✓ Batch recorded in block ${rcpt.blockNumber} (${farms.length} readings)`);
+    }
+
+    // ===== Query readings
+    async function queryReadings() {
+      const farmId = BigInt(el("queryFarm").value);
+      const indices = await publicClient.readContract({
+        address: contract,
+        abi: SENSOR_ABI,
+        functionName: "getReadingsByFarm",
+        args: [farmId]
+      });
+      
+      if (indices.length === 0) {
+        el("readingsTable").innerHTML = "<p class='muted'>No readings found for this farm.</p>";
+        return;
+      }
+      
+      let html = "<table><thead><tr><th>#</th><th>Time</th><th>Device</th><th>Temp (°C)</th><th>Moisture (%)</th><th>Humidity (%)</th></tr></thead><tbody>";
+      
+      for (const idx of indices) {
+        const reading = await publicClient.readContract({
+          address: contract,
+          abi: SENSOR_ABI,
+          functionName: "readings",
+          args: [idx]
+        });
+        
+        const date = new Date(Number(reading[0]) * 1000).toLocaleString();
+        const device = reading[1].slice(0, 10) + "...";
+        const temp = (Number(reading[3]) / 10).toFixed(1);
+        const moisture = (Number(reading[4]) / 10).toFixed(1);
+        const humidity = (Number(reading[5]) / 10).toFixed(1);
+        
+        html += `<tr><td>${idx}</td><td>${date}</td><td class="mono">${device}</td><td>${temp}</td><td>${moisture}</td><td>${humidity}</td></tr>`;
+      }
+      
+      html += "</tbody></table>";
+      el("readingsTable").innerHTML = html;
+    }
+
+    // ===== Crop events
+    async function recordCropEvent() {
+      const farmId = BigInt(el("cropFarmId").value);
+      const eventType = el("cropEventType").value;
+      const notes = el("cropNotes").value;
+      const hash = el("cropHash").value;
+      
+      const txHash = await walletClient.writeContract({
+        address: contract,
+        abi: SENSOR_ABI,
+        functionName: "recordCropEvent",
+        args: [farmId, eventType, notes, hash],
+        account,
+        gas: 200000n,
+        gasPrice: 20000000000n
+      });
+      
+      logWarn(`Crop event submitted: ${txHash}`);
+      const rcpt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+      logOk(`✓ Event recorded in block ${rcpt.blockNumber}`);
+    }
+
+    async function queryCropEvents() {
+      const farmId = BigInt(el("queryCropFarm").value);
+      const indices = await publicClient.readContract({
+        address: contract,
+        abi: SENSOR_ABI,
+        functionName: "getCropEventsByFarm",
+        args: [farmId]
+      });
+      
+      if (indices.length === 0) {
+        el("cropEventsTable").innerHTML = "<p class='muted'>No crop events found for this farm.</p>";
+        return;
+      }
+      
+      let html = "<table><thead><tr><th>#</th><th>Time</th><th>Event Type</th><th>Notes</th></tr></thead><tbody>";
+      
+      for (const idx of indices) {
+        const event = await publicClient.readContract({
+          address: contract,
+          abi: SENSOR_ABI,
+          functionName: "cropEvents",
+          args: [idx]
+        });
+        
+        const date = new Date(Number(event[2]) * 1000).toLocaleString();
+        html += `<tr><td>${idx}</td><td>${date}</td><td>${event[1]}</td><td>${event[3]}</td></tr>`;
+      }
+      
+      html += "</tbody></table>";
+      el("cropEventsTable").innerHTML = html;
+    }
+
+    // ===== Supply chain
+    async function recordSupplyStage() {
+      const productId = BigInt(el("productId").value);
+      const stage = el("stage").value;
+      const location = el("location").value;
+      const hash = el("stageHash").value;
+      
+      const txHash = await walletClient.writeContract({
+        address: contract,
+        abi: SENSOR_ABI,
+        functionName: "recordSupplyChainStage",
+        args: [productId, stage, location, hash],
+        account,
+        gas: 200000n,
+        gasPrice: 20000000000n
+      });
+      
+      logWarn(`Supply stage submitted: ${txHash}`);
+      const rcpt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+      logOk(`✓ Stage recorded in block ${rcpt.blockNumber}`);
+    }
+
+    async function querySupplyChain() {
+      const productId = BigInt(el("queryProduct").value);
+      const indices = await publicClient.readContract({
+        address: contract,
+        abi: SENSOR_ABI,
+        functionName: "getSupplyChainStages",
+        args: [productId]
+      });
+      
+      if (indices.length === 0) {
+        el("supplyTable").innerHTML = "<p class='muted'>No supply chain stages found for this product.</p>";
+        return;
+      }
+      
+      let html = "<table><thead><tr><th>#</th><th>Time</th><th>Stage</th><th>Location</th><th>Recorder</th></tr></thead><tbody>";
+      
+      for (const idx of indices) {
+        const stage = await publicClient.readContract({
+          address: contract,
+          abi: SENSOR_ABI,
+          functionName: "supplyChainStages",
+          args: [idx]
+        });
+        
+        const date = new Date(Number(stage[2]) * 1000).toLocaleString();
+        const recorder = stage[3].slice(0, 10) + "...";
+        html += `<tr><td>${idx}</td><td>${date}</td><td>${stage[1]}</td><td>${stage[4]}</td><td class="mono">${recorder}</td></tr>`;
+      }
+      
+      html += "</tbody></table>";
+      el("supplyTable").innerHTML = html;
+    }
+
+    // ===== Role management
+    async function grantRole() {
+      const role = ROLES[el("grantRole").value];
+      const addr = getAddress(el("grantAddr").value.trim());
+      
+      const hash = await walletClient.writeContract({
+        address: contract,
+        abi: SENSOR_ABI,
+        functionName: "grantRole",
+        args: [role, addr],
+        account,
+        gas: 100000n,
+        gasPrice: 20000000000n
+      });
+      
+      logWarn(`Grant role tx: ${hash}`);
+      const rcpt = await publicClient.waitForTransactionReceipt({ hash });
+      logOk(`✓ Role granted in block ${rcpt.blockNumber}`);
+    }
+
+    async function revokeRole() {
+      const role = ROLES[el("revokeRole").value];
+      const addr = getAddress(el("revokeAddr").value.trim());
+      
+      const hash = await walletClient.writeContract({
+        address: contract,
+        abi: SENSOR_ABI,
+        functionName: "revokeRole",
+        args: [role, addr],
+        account,
+        gas: 100000n,
+        gasPrice: 20000000000n
+      });
+      
+      logWarn(`Revoke role tx: ${hash}`);
+      const rcpt = await publicClient.waitForTransactionReceipt({ hash });
+      logOk(`✓ Role revoked in block ${rcpt.blockNumber}`);
     }
 
     // ===== Logging
@@ -431,7 +1025,7 @@
     }
     
     function escapeHtml(s) {
-      return s.replace(/[&<>"]/g, c => ({
+      return String(s).replace(/[&<>"]/g, c => ({
         '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;',
@@ -439,7 +1033,21 @@
       }[c]));
     }
 
-    // ===== Wire up UI
+    // ===== Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remove active from all tabs
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        // Add active to clicked tab
+        tab.classList.add('active');
+        const tabName = tab.getAttribute('data-tab');
+        document.getElementById(`tab-${tabName}`).classList.add('active');
+      });
+    });
+
+    // ===== Wire up buttons
     el("btnConnect").onclick = async () => {
       try {
         await connect();
@@ -450,7 +1058,7 @@
 
     el("btnLoad").onclick = async () => {
       try {
-        await loadToken();
+        await loadContract();
       } catch (e) {
         logErr(e.message || e);
       }
@@ -464,29 +1072,77 @@
       }
     };
 
-    el("btnSend").onclick = async () => {
+    el("btnSubmit").onclick = async () => {
       try {
-        await send();
+        await submitReading();
       } catch (e) {
         logErr(e.shortMessage || e.message || e);
       }
     };
 
-    el("btnWatch").onclick = async () => {
+    el("btnBatch").onclick = async () => {
       try {
-        await watchAsset();
+        await submitBatch();
+      } catch (e) {
+        logErr(e.shortMessage || e.message || e);
+      }
+    };
+
+    el("btnQuery").onclick = async () => {
+      try {
+        await queryReadings();
       } catch (e) {
         logErr(e.message || e);
       }
     };
 
-    // Restore from localStorage fast
-    (async () => {
-      // Pre-fill team/token if saved
-      if (tokenInput.value) {
-        metaEl.textContent = `Ready to load ${tokenInput.value}`;
+    el("btnCropEvent").onclick = async () => {
+      try {
+        await recordCropEvent();
+      } catch (e) {
+        logErr(e.shortMessage || e.message || e);
       }
-    })();
+    };
+
+    el("btnQueryCrop").onclick = async () => {
+      try {
+        await queryCropEvents();
+      } catch (e) {
+        logErr(e.message || e);
+      }
+    };
+
+    el("btnStage").onclick = async () => {
+      try {
+        await recordSupplyStage();
+      } catch (e) {
+        logErr(e.shortMessage || e.message || e);
+      }
+    };
+
+    el("btnQuerySupply").onclick = async () => {
+      try {
+        await querySupplyChain();
+      } catch (e) {
+        logErr(e.message || e);
+      }
+    };
+
+    el("btnGrant").onclick = async () => {
+      try {
+        await grantRole();
+      } catch (e) {
+        logErr(e.shortMessage || e.message || e);
+      }
+    };
+
+    el("btnRevoke").onclick = async () => {
+      try {
+        await revokeRole();
+      } catch (e) {
+        logErr(e.shortMessage || e.message || e);
+      }
+    };
   </script>
 </body>
 </html>

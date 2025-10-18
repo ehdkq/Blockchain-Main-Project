@@ -36,6 +36,10 @@ async function main() {
   // Look back 2000 blocks (or from block 0 if chain is newer)
   const fromBlock = latest > 5000n ? latest - 5000n : 0n;
 
+    // Debug info
+  console.log(`Scanning blocks ${fromBlock} to ${latest}`);
+  console.log(`Looking for events from contract: ${TOKEN}`);
+  
   // Fetch all logs (events) emitted by the token contract
   const logs = await publicClient.getLogs({
     address: TOKEN,
