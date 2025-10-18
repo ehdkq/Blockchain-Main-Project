@@ -706,38 +706,66 @@
       logOk("Connected. Network ready.");
     }
 
+    let sensorEventUnwatch = null;
+    let cropEventUnwatch = null;
+
     async function loadContract() {
       contract = getAddress(contractInput.value.trim());
       save();
-      
       contractInfoEl.textContent = contract;
       logOk(`Loaded contract ${contract}`);
-      
-      // Watch events
-      publicClient.watchContractEvent({
+
+      // Remove previous watchers
+      if (sensorEventUnwatch) {
+        sensorEventUnwatch();
+        sensorEventUnwatch = null;
+      }
+      if (cropEventUnwatch) {
+        cropEventUnwatch();
+        cropEventUnwatch = null;
+      }
+
+      // Get current block number to avoid replaying old logs
+      const latestBlock = await publicClient.getBlockNumber();
+
+      // Track seen reading IDs to prevent duplicates
+      const seenReadings = new Set();
+      const seenEvents = new Set();
+
+      // Watch SensorDataSubmitted events
+      sensorEventUnwatch = publicClient.watchContractEvent({
         address: contract,
         abi: SENSOR_ABI,
         eventName: "SensorDataSubmitted",
+        fromBlock: latestBlock + 1n,
         onLogs: (logs) => {
           for (const l of logs) {
-            logOk(`📊 New reading #${l.args.readingId} from device ${l.args.deviceId?.slice(0,8)}...`);
+            const id = l.args.readingId.toString();
+            if (seenReadings.has(id)) continue;
+            seenReadings.add(id);
+            logOk(`📊 New reading #${id} from device ${l.args.deviceId?.slice(0,8)}...`);
           }
           refresh();
         }
       });
 
-      publicClient.watchContractEvent({
+      // Watch CropEventRecorded events
+      cropEventUnwatch = publicClient.watchContractEvent({
         address: contract,
         abi: SENSOR_ABI,
         eventName: "CropEventRecorded",
+        fromBlock: latestBlock + 1n,
         onLogs: (logs) => {
           for (const l of logs) {
-            logOk(`🌱 Crop event #${l.args.eventId}: ${l.args.eventType}`);
+            const id = l.args.eventId.toString();
+            if (seenEvents.has(id)) continue;
+            seenEvents.add(id);
+            logOk(`🌱 Crop event #${id}: ${l.args.eventType}`);
           }
           refresh();
         }
       });
-      
+
       await refresh();
     }
 
@@ -816,8 +844,8 @@
         functionName: "submitBatch",
         args: [farms, temps, moistures, humidities],
         account,
-        gas: 500000n,
-        gasPrice: 20000000000n
+        gas: 1000000n, // increased gas limit
+      gasPrice: 50000000000n // increased gas price
       });
       
       logWarn(`Batch submitted: ${hash}`);
