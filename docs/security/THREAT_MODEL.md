@@ -246,10 +246,10 @@ This document identifies critical security threats to our blockchain application
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 1.0 | 2025-10-30 | Security Team | Initial threat model |
+| 1.0 | 2025-10-30 | Ledgers | Initial threat model |
 
 **Review Schedule**: Quarterly or after major changes
-**Next Review**: 2026-01-30
+**Next Review**: 2025-10-30
 
 ---
 
