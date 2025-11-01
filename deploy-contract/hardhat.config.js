@@ -106,7 +106,7 @@ module.exports = {
 
     // Custom DID Lab Network (Configure with your DID Lab details)
     didlab: {
-      url:  "https://eth.didlab.org",
+      url: "https://eth.didlab.org",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 252501,
       gasPrice: "auto",
