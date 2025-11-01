@@ -20,7 +20,7 @@ module.exports = {
     
     // new development network with custom settings
     localhost: {
-      url: "http://eth.didlab.org",
+      url: "https://eth.didlab.org",
       chainId: 252501
     },
 
