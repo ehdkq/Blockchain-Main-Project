@@ -1,0 +1,54 @@
+{
+  "name": "blockchain-security-project",
+  "version": "1.0.0",
+  "description": "Comprehensive blockchain security implementation with threat modeling",
+  "main": "index.js",
+  "scripts": {
+    "test": "hardhat test",
+    "test:security": "hardhat test --grep 'Security Test Suite'",
+    "test:coverage": "hardhat coverage",
+    "compile": "hardhat compile",
+    "clean": "hardhat clean",
+    "node": "hardhat node",
+    "deploy:local": "hardhat run scripts/deploy.js --network localhost",
+    "deploy:didlab": "hardhat run scripts/deploy.js --network didlab",
+    "deploy:sepolia": "hardhat run scripts/deploy.js --network sepolia",
+    "deploy:mumbai": "hardhat run scripts/deploy.js --network mumbai",
+    "deploy:fuji": "hardhat run scripts/deploy.js --network fuji",
+    "deploy:bscTestnet": "hardhat run scripts/deploy.js --network bscTestnet",
+    "interact:local": "hardhat run scripts/interact.js --network localhost",
+    "interact:didlab": "hardhat run scripts/interact.js --network didlab",
+    "interact:sepolia": "hardhat run scripts/interact.js --network sepolia",
+    "verify:sepolia": "hardhat verify --network sepolia",
+    "console:local": "hardhat console --network localhost",
+    "console:didlab": "hardhat console --network didlab"
+  },
+  "keywords": [
+    "blockchain",
+    "security",
+    "threat-model",
+    "smart-contracts",
+    "differential-privacy",
+    "did-lab"
+  ],
+  "author": "Security Team",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
+    "@nomicfoundation/hardhat-ethers": "^3.0.0",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.0",
+    "@typechain/ethers-v6": "^0.5.0",
+    "@typechain/hardhat": "^9.0.0",
+    "chai": "^4.3.10",
+    "ethers": "^6.4.0",
+    "hardhat": "^2.19.0",
+    "hardhat-gas-reporter": "^1.0.8",
+    "solidity-coverage": "^0.8.0",
+    "typechain": "^8.3.0"
+  }
+}
