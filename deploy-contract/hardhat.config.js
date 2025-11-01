@@ -106,9 +106,9 @@ module.exports = {
 
     // Custom DID Lab Network (Configure with your DID Lab details)
     didlab: {
-      url: process.env.DIDLAB_RPC_URL || "http://didlab-node:8545",
+      url:  "https://eth.didlab.org",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      chainId: parseInt(process.env.DIDLAB_CHAIN_ID || "9999"),
+      chainId: 252501,
       gasPrice: "auto",
       timeout: 60000
     }
