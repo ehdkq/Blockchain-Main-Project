@@ -13,15 +13,15 @@ module.exports = {
     }
   },
   networks: {
-    // Local development network
+    // new development network
     hardhat: {
-      chainId: 1337
+      chainId: 252501
     },
     
-    // Local development network with custom settings
+    // new development network with custom settings
     localhost: {
-      url: "http://127.0.0.1:8545",
-      chainId: 1337
+      url: "http://eth.didlab.org",
+      chainId: 252501
     },
 
     // Ethereum Sepolia Testnet (DID Lab compatible)
