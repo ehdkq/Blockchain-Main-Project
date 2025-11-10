@@ -21,7 +21,10 @@
     "interact:sepolia": "hardhat run scripts/interact.js --network sepolia",
     "verify:sepolia": "hardhat verify --network sepolia",
     "console:local": "hardhat console --network localhost",
-    "console:didlab": "hardhat console --network didlab"
+    "console:didlab": "hardhat console --network didlab",
+    "build": "hardhat compile",
+    "test": "hardhat test",
+    "metric:perf": "ts-node --transpile-only scripts/metrics/perf_latency.ts"
   },
   "keywords": [
     "blockchain",
@@ -49,6 +52,7 @@
     "hardhat": "^2.19.0",
     "hardhat-gas-reporter": "^1.0.8",
     "solidity-coverage": "^0.8.0",
-    "typechain": "^8.3.0"
+    "typechain": "^8.3.0",
+    "ts-node": "^10.9.2"
   }
 }
