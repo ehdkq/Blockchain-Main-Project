@@ -1,0 +1,9 @@
+{
+  "network": "didlab",
+  "chainId": 252501,
+  "contractAddress": "0x71E9DA673e3F2D2b9E479B780FAC8C904ceCC491",
+  "deployerAddress": "0x75A744A004924AF850f0F3E4Bd29C1b1E773d001",
+  "transactionHash": "0x513a1802bf3a5fb0bcfe6896ec1f547da3e7169062275fd8a09b13d977ac6bcc",
+  "timestamp": "2025-12-07T02:56:34.802Z",
+  "blockNumber": null
+}
